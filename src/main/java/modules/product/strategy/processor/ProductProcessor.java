@@ -1,4 +1,4 @@
-package adapter.product.strategy.processor;
+package modules.product.strategy.processor;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
@@ -7,8 +7,8 @@ import jakarta.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import adapter.product.model.Product;
-import adapter.product.strategy.interfaces.ProductProcessorStrategy;
+import modules.product.model.Product;
+import modules.product.strategy.interfaces.ProductProcessorStrategy;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;

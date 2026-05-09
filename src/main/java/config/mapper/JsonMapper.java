@@ -1,4 +1,4 @@
-package shared.mapper;
+package config.mapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import com.fasterxml.jackson.core.JsonProcessingException;

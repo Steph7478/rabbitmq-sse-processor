@@ -1,4 +1,4 @@
-package adapter.sse.service;
+package modules.sse.service;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,7 +9,7 @@ import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseBroadcaster;
 import jakarta.ws.rs.sse.SseEventSink;
 
-import shared.mapper.JsonMapper;
+import config.mapper.JsonMapper;
 import web.output.StatusResponse;
 
 @ApplicationScoped

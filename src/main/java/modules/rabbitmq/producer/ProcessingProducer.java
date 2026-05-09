@@ -1,12 +1,12 @@
-package adapter.rabbitmq.producer;
+package modules.rabbitmq.producer;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
-import adapter.product.model.Product;
-import shared.mapper.JsonMapper;
+import config.mapper.JsonMapper;
+import modules.product.model.Product;
 
 import java.util.HashMap;
 import java.util.Map;

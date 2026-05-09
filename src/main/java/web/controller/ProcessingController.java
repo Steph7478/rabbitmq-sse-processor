@@ -7,12 +7,14 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseEventSink;
+
+import modules.product.model.Product;
+import modules.rabbitmq.producer.ProcessingProducer;
+import modules.sse.service.SSEEventService;
+
 import jakarta.validation.Valid;
 
-import adapter.rabbitmq.producer.ProcessingProducer;
-import adapter.sse.service.SSEEventService;
 import web.output.StatusResponse;
-import adapter.product.model.Product;
 
 import java.util.Map;
 import java.util.UUID;

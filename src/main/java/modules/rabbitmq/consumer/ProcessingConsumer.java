@@ -1,4 +1,4 @@
-package adapter.rabbitmq.consumer;
+package modules.rabbitmq.consumer;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -7,10 +7,10 @@ import org.eclipse.microprofile.reactive.messaging.Acknowledgment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import adapter.product.model.Product;
-import adapter.product.strategy.processor.ProductProcessor;
-import adapter.sse.service.SSEEventService;
-import shared.mapper.JsonMapper;
+import config.mapper.JsonMapper;
+import modules.product.model.Product;
+import modules.product.strategy.processor.ProductProcessor;
+import modules.sse.service.SSEEventService;
 import web.controller.ProcessingController;
 import web.output.StatusResponse;
 
