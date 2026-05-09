@@ -1,0 +1,70 @@
+quarkus:
+  redis:
+    hosts: redis://localhost:6379
+    timeout: 10s
+    max-pool-size: 10
+    max-pool-waiting: 5
+    
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    
+  smallrye-messaging:
+    incoming:
+      consumer:
+        connector: smallrye-rabbitmq
+        queue:
+          name: processing.queue
+        exchange:
+          name: processing.exchange
+          type: direct
+        routing-keys:
+          - processing.key
+        max-inflight-messages: 10
+        auto-acknowledgments: false
+          
+    outgoing:
+      producer:
+        connector: smallrye-rabbitmq
+        exchange:
+          name: processing.exchange
+          type: direct
+        default-routing-key: processing.key
+
+  http:
+    sse:
+      heartbeat:
+        enabled: true
+        interval: 30s
+        
+  micrometer:
+    enabled: true
+    export:
+      json:
+        enabled: true
+    binder:
+      system-cpu:
+        enabled: true
+      jvm:
+        enabled: true
+
+app:
+  processing:
+    base-time: 2000
+    standard-deviation: 500
+    types:
+      - name: prime-calculation
+        cpu-load: 1000000
+        io-time: 1000
+      - name: aes-encryption
+        cpu-load: 5000000
+        io-time: 500
+      - name: gzip-compression
+        cpu-load: 2000000
+        io-time: 2000
+    limits:
+      max-requests-per-second: 100
+      max-sse-connections: 1000
+      queue-max-size: 10000
