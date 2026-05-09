@@ -1,4 +1,4 @@
-package adapter.product.interfaces;
+package adapter.product.strategy.interfaces;
 
 import adapter.product.model.Product;
 

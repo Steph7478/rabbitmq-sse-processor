@@ -1,12 +1,12 @@
-package adapter.product.strategy;
+package adapter.product.strategy.qualifiers;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import adapter.product.interfaces.ProductProcessorStrategy;
 import adapter.product.model.Product;
+import adapter.product.strategy.interfaces.ProductProcessorStrategy;
 
 import java.util.stream.IntStream;
 
