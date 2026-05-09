@@ -10,4 +10,4 @@ echo -e "${BLUE}⚠️  First build may take several minutes${NC}"
 echo ""
 
 cd "$(dirname "$0")/../prod/native"
-docker-compose up --build
+docker-compose up -d --build

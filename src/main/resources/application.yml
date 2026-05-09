@@ -1,47 +1,10 @@
 quarkus:
-  redis:
-    hosts: redis://localhost:6379
-    timeout: 5s               
-    max-pool-size: 3             
-    max-pool-waiting: 2       
-    
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
+    host: ${QUARKUS_RABBITMQ_HOST:localhost}
+    port: ${QUARKUS_RABBITMQ_PORT:5672}
+    username: ${QUARKUS_RABBITMQ_USERNAME:guest}
+    password: ${QUARKUS_RABBITMQ_PASSWORD:guest}
     
-  smallrye-messaging:
-    incoming:
-      consumer:
-        connector: smallrye-rabbitmq
-        queue:
-          name: processing.queue
-          declaration:
-            arguments:
-              x-message-ttl: 30000   
-              x-expires: 60000       
-        exchange:
-          name: processing.exchange
-          type: direct
-        routing-keys:
-          - processing.key
-        max-inflight-messages: 5        
-        auto-acknowledgments: true   
-        consumer:
-          arguments:
-            x-priority: 5
-          
-    outgoing:
-      producer:
-        connector: smallrye-rabbitmq
-        exchange:
-          name: processing.exchange
-          type: direct
-        default-routing-key: processing.key
-        ttl: 15000
-        delivery-mode: persistent
-
   http:
     sse:
       heartbeat:
@@ -63,7 +26,37 @@ quarkus:
     max-threads: 8
     core-threads: 2
     queue-size: 20
-    growth-resistance: 2
+
+mp:
+  messaging:
+    incoming:
+      consumer:
+        connector: smallrye-rabbitmq
+        host: ${QUARKUS_RABBITMQ_HOST:localhost}
+        port: ${QUARKUS_RABBITMQ_PORT:5672}
+        username: ${QUARKUS_RABBITMQ_USERNAME:guest}
+        password: ${QUARKUS_RABBITMQ_PASSWORD:guest}
+        exchange:
+          name: processing.exchange
+          type: direct
+        queue:
+          name: processing.queue
+        routing-keys:
+          - processing.key
+        max-inflight-messages: 5
+        auto-acknowledgment: true
+    outgoing:
+      producer:
+        connector: smallrye-rabbitmq
+        host: ${QUARKUS_RABBITMQ_HOST:localhost}
+        port: ${QUARKUS_RABBITMQ_PORT:5672}
+        username: ${QUARKUS_RABBITMQ_USERNAME:guest}
+        password: ${QUARKUS_RABBITMQ_PASSWORD:guest}
+        exchange:
+          name: processing.exchange
+          type: direct
+        default-routing-key: processing.key
+        delivery-mode: persistent
 
 app:
   processing:
