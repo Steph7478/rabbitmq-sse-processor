@@ -3,7 +3,7 @@ package modules.rabbitmq.consumer;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
-import org.eclipse.microprofile.reactive.messaging.Acknowledgment;
+import org.eclipse.microprofile.reactive.messaging.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,60 +25,53 @@ public class ProcessingConsumer {
 
     @Inject
     JsonMapper json;
-
     @Inject
     ProductProcessor productProcessor;
-
     @Inject
     SSEEventService sseEventService;
-    
     @Inject
     ProcessingController controller;
 
     @Incoming("consumer")
-    @Acknowledgment(Acknowledgment.Strategy.MANUAL)
-    public CompletionStage<Void> consume(org.eclipse.microprofile.reactive.messaging.Message<String> message) {
+    public CompletionStage<Void> consume(Message<String> message) {
         return CompletableFuture.supplyAsync(() -> parseMessage(message.getPayload()))
-            .thenCompose(data -> processAndNotify(data))
-            .thenRun(message::ack)
-            .exceptionally(throwable -> {
-                LOG.error("Failed to process message", throwable);
-                message.nack(throwable);
-                return null;
-            });
+                .thenCompose(this::processAndNotify)
+                .exceptionally(e -> {
+                    LOG.error("Failed to process message", e);
+                    return null;
+                });
     }
 
     private MessageData parseMessage(String payload) {
         Map<String, Object> map = json.fromJsonToMap(payload);
         
-        String id = (String) map.get("id");
-        
         @SuppressWarnings("unchecked")
         Map<String, Object> productMap = (Map<String, Object>) map.get("product");
         
-        String productId = (String) productMap.get("id");
-        String productName = (String) productMap.get("product");
-        Double productPrice = ((Number) productMap.get("price")).doubleValue();
-        
-        Product product = new Product(productId, productName, productPrice);
-        Object price = map.get("price");
-        
-        return new MessageData(id, product, price);
+        return new MessageData(
+            (String) map.get("id"),
+            new Product(
+                (String) productMap.get("id"),
+                (String) productMap.get("product"),
+                ((Number) productMap.get("price")).doubleValue()
+            ),
+            map.get("price")
+        );
     }
 
     private CompletionStage<Void> processAndNotify(MessageData data) {
-        sendStatusUpdate(data.id, StatusResponse.Status.PROCESSING, "Processing started");
+        sendStatus(data.id, StatusResponse.Status.PROCESSING, "Processing started");
         
         return productProcessor.process(data.id, data.product, data.price)
-            .thenRun(() -> sendStatusUpdate(data.id, StatusResponse.Status.COMPLETED, "Processing completed"))
-            .exceptionally(throwable -> {
-                sendStatusUpdate(data.id, StatusResponse.Status.FAILED, throwable.getMessage());
-                throw new RuntimeException(throwable);
-            });
+                .thenRun(() -> sendStatus(data.id, StatusResponse.Status.COMPLETED, "Processing completed"))
+                .exceptionally(e -> {
+                    sendStatus(data.id, StatusResponse.Status.FAILED, e.getMessage());
+                    throw new RuntimeException(e);
+                });
     }
 
-    private void sendStatusUpdate(String id, StatusResponse.Status status, String message) {
-        StatusResponse response = new StatusResponse(id, status, message);
+    private void sendStatus(String id, StatusResponse.Status status, String msg) {
+        StatusResponse response = new StatusResponse(id, status, msg);
         controller.updateStatus(id, response);
         sseEventService.sendEvent(id, response);
     }

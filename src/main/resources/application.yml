@@ -27,7 +27,7 @@ quarkus:
         routing-keys:
           - processing.key
         max-inflight-messages: 5        
-        auto-acknowledgments: false   
+        auto-acknowledgments: true   
         consumer:
           arguments:
             x-priority: 5
