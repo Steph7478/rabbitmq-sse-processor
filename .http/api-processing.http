@@ -1,0 +1,96 @@
+# Processing API - Tests
+# Base URL - change according to your environment
+@baseUrl = http://localhost:8080
+
+###
+
+### 1. Create processing (POST /api/processing)
+# Sends a product for processing
+# Returns a processId
+
+POST {{baseUrl}}/api/processing
+Content-Type: application/json
+
+{
+  "id": "prod-001",
+  "product": "Notebook Gamer",
+  "price": 5499.99
+}
+
+### Example with different product
+POST {{baseUrl}}/api/processing
+Content-Type: application/json
+
+{
+  "id": "prod-002",
+  "product": "Mouse Gamer",
+  "price": 299.90
+}
+
+### Example with low values (for weak PC)
+POST {{baseUrl}}/api/processing
+Content-Type: application/json
+
+{
+  "id": "prod-003",
+  "product": "Mechanical Keyboard",
+  "price": 450.00
+}
+
+###
+
+### 2. Check status (GET /api/processing/{id}/status)
+# Replace {id} with the processId returned from POST
+
+@processId = YOUR_PROCESS_ID_HERE
+
+GET {{baseUrl}}/api/processing/{{processId}}/status
+Content-Type: application/json
+
+### Example with specific ID (replace with yours)
+GET {{baseUrl}}/api/processing/550e8400-e29b-41d4-a716-446655440000/status
+
+###
+
+### 3. SSE Stream (GET /api/processing/{id}/stream)
+# Server-Sent Events connection to track status in real-time
+# Open in browser or use curl
+
+@processIdStream = YOUR_PROCESS_ID_HERE
+
+GET {{baseUrl}}/api/processing/{{processIdStream}}/stream
+
+### Example with specific ID (keeps connection open)
+GET {{baseUrl}}/api/processing/550e8400-e29b-41d4-a716-446655440000/stream
+
+###
+
+### Complete test flow (using variables)
+
+# Step 1: Create processing
+# @name createProcess
+POST {{baseUrl}}/api/processing
+Content-Type: application/json
+
+{
+  "id": "prod-flow-test",
+  "product": "Test Flow Product",
+  "price": 999.99
+}
+
+### Step 2: Extract processId from response
+@flowProcessId = {{createProcess.response.body.$.processId}}
+
+### Step 3: Check status with the generated ID
+GET {{baseUrl}}/api/processing/{{flowProcessId}}/status
+
+### Step 4: Track SSE (keeps connection - run separately)
+GET {{baseUrl}}/api/processing/{{flowProcessId}}/stream
+
+###
+
+### Health Check (optional - if available)
+GET {{baseUrl}}/q/health
+
+### Metrics (optional - if using Micrometer)
+GET {{baseUrl}}/q/metrics
