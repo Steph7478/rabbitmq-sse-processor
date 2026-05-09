@@ -1,9 +1,9 @@
 quarkus:
   redis:
     hosts: redis://localhost:6379
-    timeout: 10s
-    max-pool-size: 10
-    max-pool-waiting: 5
+    timeout: 5s               
+    max-pool-size: 3             
+    max-pool-waiting: 2       
     
   rabbitmq:
     host: localhost
@@ -17,13 +17,20 @@ quarkus:
         connector: smallrye-rabbitmq
         queue:
           name: processing.queue
+          declaration:
+            arguments:
+              x-message-ttl: 30000   
+              x-expires: 60000       
         exchange:
           name: processing.exchange
           type: direct
         routing-keys:
           - processing.key
-        max-inflight-messages: 10
-        auto-acknowledgments: false
+        max-inflight-messages: 5        
+        auto-acknowledgments: false   
+        consumer:
+          arguments:
+            x-priority: 5
           
     outgoing:
       producer:
@@ -32,12 +39,14 @@ quarkus:
           name: processing.exchange
           type: direct
         default-routing-key: processing.key
+        ttl: 15000
+        delivery-mode: persistent
 
   http:
     sse:
       heartbeat:
         enabled: true
-        interval: 30s
+        interval: 60s
         
   micrometer:
     enabled: true
@@ -49,22 +58,28 @@ quarkus:
         enabled: true
       jvm:
         enabled: true
+        
+  thread-pool:
+    max-threads: 8
+    core-threads: 2
+    queue-size: 20
+    growth-resistance: 2
 
 app:
   processing:
-    base-time: 2000
-    standard-deviation: 500
+    base-time: 500
+    standard-deviation: 100
     types:
       - name: prime-calculation
-        cpu-load: 1000000
-        io-time: 1000
+        cpu-load: 100000
+        io-time: 100
       - name: aes-encryption
-        cpu-load: 5000000
-        io-time: 500
+        cpu-load: 500000
+        io-time: 50
       - name: gzip-compression
-        cpu-load: 2000000
-        io-time: 2000
+        cpu-load: 200000
+        io-time: 200
     limits:
-      max-requests-per-second: 100
-      max-sse-connections: 1000
-      queue-max-size: 10000
+      max-requests-per-second: 20
+      max-sse-connections: 50
+      queue-max-size: 500
