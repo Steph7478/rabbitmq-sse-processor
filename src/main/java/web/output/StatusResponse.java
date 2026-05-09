@@ -1,4 +1,4 @@
-package adapter.output;
+package web.output;
 
 public record StatusResponse(
     String processId,

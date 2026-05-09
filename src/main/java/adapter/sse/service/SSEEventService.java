@@ -9,8 +9,8 @@ import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseBroadcaster;
 import jakarta.ws.rs.sse.SseEventSink;
 
-import adapter.output.StatusResponse;
 import shared.mapper.JsonMapper;
+import web.output.StatusResponse;
 
 @ApplicationScoped
 public class SSEEventService {

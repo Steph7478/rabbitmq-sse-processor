@@ -1,4 +1,4 @@
-package adapter.controller;
+package web.controller;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -11,7 +11,7 @@ import jakarta.validation.Valid;
 
 import adapter.rabbitmq.producer.ProcessingProducer;
 import adapter.sse.service.SSEEventService;
-import adapter.output.StatusResponse;
+import web.output.StatusResponse;
 import adapter.product.model.Product;
 
 import java.util.Map;

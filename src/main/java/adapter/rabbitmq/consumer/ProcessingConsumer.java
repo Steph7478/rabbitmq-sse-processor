@@ -10,9 +10,9 @@ import org.slf4j.LoggerFactory;
 import adapter.product.model.Product;
 import adapter.product.strategy.processor.ProductProcessor;
 import adapter.sse.service.SSEEventService;
-import adapter.output.StatusResponse;
-import adapter.controller.ProcessingController;
 import shared.mapper.JsonMapper;
+import web.controller.ProcessingController;
+import web.output.StatusResponse;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
