@@ -6,6 +6,7 @@ A reactive message processing system using RabbitMQ and Server-Sent Events (SSE)
 
 ### Using Makefile
 
+```bash
 make dev          # Start development mode (hot-reload + debug)
 make prod-native  # Start production mode (Native Image)
 make prod-jvm     # Start production mode (JVM)
@@ -13,11 +14,14 @@ make stop         # Stop all services
 make clean        # Stop and remove volumes
 make logs-dev     # Show dev logs
 make status       # Show service status
+```
 
 ### Using Docker Compose
 
+```bash
 cd docker/dev
 docker-compose up --build
+```
 
 ### API Testing
 
