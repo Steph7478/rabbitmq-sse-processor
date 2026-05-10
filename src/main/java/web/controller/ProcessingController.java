@@ -79,11 +79,11 @@ public class ProcessingController {
 
         StatusResponse status = new StatusResponse(
             id,
-            StatusResponse.Status.COMPLETED,
+            StatusResponse.Status.PENDING,
             String.format("Price updated to %.2f", newPrice)
         );
         updateStatus(id, status);
-        sseService.sendEvent(id, status);
+        producer.sendMessage(id, product);
 
         return Response.ok(status).build();
     }
