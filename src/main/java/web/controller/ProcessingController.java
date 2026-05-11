@@ -56,27 +56,20 @@ public class ProcessingController {
 
     @PUT
     @Path("/{id}/price")
-    public Response updatePrice(
-        @PathParam("id") String id,
-        Map<String, Double> body
-    ) {
+    public Response updatePrice(@PathParam("id") String id, Product body) {
         Product product = Optional.ofNullable(productCache.get(id)).orElseThrow(
             () -> new NotFoundException("Product not found")
         );
 
-        Double price = Optional.ofNullable(body.get("price")).orElseThrow(() ->
-            new NotFoundException("Price required")
-        );
-
         productCache.put(
             id,
-            new Product(product.id(), product.product(), price)
+            new Product(product.id(), product.product(), product.price())
         );
 
         StatusResponse status = new StatusResponse(
             id,
             StatusResponse.Status.PENDING,
-            String.format("Price updated to %.2f", price)
+            String.format("Price updated to %.2f", product.price())
         );
         updateStatus(id, status);
         producer.sendMessage(id, productCache.get(id));
