@@ -9,6 +9,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseEventSink;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import modules.product.model.Product;
@@ -59,31 +60,26 @@ public class ProcessingController {
         @PathParam("id") String id,
         Map<String, Double> body
     ) {
-        Product product = productCache.get(id);
-        if (
-            product == null || statusCache.get(id) == null
-        ) return Response.status(Response.Status.NOT_FOUND).build();
-
-        Double newPrice = body.get("price");
-        if (newPrice == null || newPrice < 0) return Response.status(
-            Response.Status.BAD_REQUEST
-        ).build();
-
-        Product updatedProduct = new Product(
-            product.id(),
-            product.product(),
-            newPrice
+        Product product = Optional.ofNullable(productCache.get(id)).orElseThrow(
+            () -> new NotFoundException("Product not found")
         );
 
-        productCache.put(id, updatedProduct);
+        Double price = Optional.ofNullable(body.get("price")).orElseThrow(() ->
+            new NotFoundException("Price required")
+        );
+
+        productCache.put(
+            id,
+            new Product(product.id(), product.product(), price)
+        );
 
         StatusResponse status = new StatusResponse(
             id,
             StatusResponse.Status.PENDING,
-            String.format("Price updated to %.2f", newPrice)
+            String.format("Price updated to %.2f", price)
         );
         updateStatus(id, status);
-        producer.sendMessage(id, product);
+        producer.sendMessage(id, productCache.get(id));
 
         return Response.ok(status).build();
     }
@@ -91,13 +87,10 @@ public class ProcessingController {
     @GET
     @Path("/{id}/status")
     public Response getStatus(@PathParam("id") String id) {
-        StatusResponse status = statusCache.get(id);
-
-        if (status == null) return Response.status(
-            Response.Status.NOT_FOUND
-        ).build();
-
-        return Response.ok(status).build();
+        return Optional.ofNullable(statusCache.get(id))
+            .map(Response::ok)
+            .orElse(Response.status(Response.Status.NOT_FOUND))
+            .build();
     }
 
     @GET
@@ -109,8 +102,9 @@ public class ProcessingController {
     ) {
         sseService.addClient(id, sink);
 
-        StatusResponse status = statusCache.get(id);
-        if (status != null) sseService.sendEvent(id, status);
+        Optional.ofNullable(statusCache.get(id)).ifPresent(status ->
+            sseService.sendEvent(id, status)
+        );
 
         sink.send(
             sse
@@ -122,6 +116,8 @@ public class ProcessingController {
     }
 
     public void updateStatus(String id, StatusResponse status) {
-        statusCache.put(id, status);
+        Optional.ofNullable(id).ifPresent(validId ->
+            statusCache.put(validId, status)
+        );
     }
 }

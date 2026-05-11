@@ -3,8 +3,6 @@ package modules.rabbitmq.producer;
 import config.mapper.JsonMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
 import modules.product.model.Product;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
