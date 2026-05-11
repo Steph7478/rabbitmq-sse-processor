@@ -20,12 +20,8 @@ public class ProcessingProducer {
     JsonMapper json;
 
     public void sendMessage(String id, Product request) {
-        Map<String, Object> message = new HashMap<>();
-        message.put("id", id);
-        message.put("product", request);
-
         emitter
-            .send(json.toJson(message))
+            .send(json.toJson(request))
             .toCompletableFuture()
             .exceptionally(throwable -> {
                 throw new RuntimeException(
