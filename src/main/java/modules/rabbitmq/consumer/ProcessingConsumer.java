@@ -29,7 +29,7 @@ public class ProcessingConsumer {
 
     @Incoming("consumer")
     public CompletionStage<Void> consume(Message<String> message) {
-        Product product = Product.fromJson(json, message.getPayload());
+        Product product = json.fromJson(message.getPayload(), Product.class);
         return processAndNotify(product);
     }
 
