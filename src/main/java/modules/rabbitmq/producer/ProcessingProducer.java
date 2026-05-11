@@ -1,15 +1,13 @@
 package modules.rabbitmq.producer;
 
+import config.mapper.JsonMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.eclipse.microprofile.reactive.messaging.Channel;
-import org.eclipse.microprofile.reactive.messaging.Emitter;
-
-import config.mapper.JsonMapper;
-import modules.product.model.Product;
-
 import java.util.HashMap;
 import java.util.Map;
+import modules.product.model.Product;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
 
 @ApplicationScoped
 public class ProcessingProducer {
@@ -24,17 +22,16 @@ public class ProcessingProducer {
     public void sendMessage(String id, Product request) {
         Map<String, Object> message = new HashMap<>();
         message.put("id", id);
-        message.put("product", Map.of(
-            "id", request.id(),
-            "product", request.product(),
-            "price", request.price()
-        ));
-        message.put("price", request.price());
+        message.put("product", request);
 
-        emitter.send(json.toJson(message))
-                .toCompletableFuture()
-                .exceptionally(throwable -> {
-                    throw new RuntimeException("Failed to send to RabbitMQ", throwable);
-                });
+        emitter
+            .send(json.toJson(message))
+            .toCompletableFuture()
+            .exceptionally(throwable -> {
+                throw new RuntimeException(
+                    "Failed to send to RabbitMQ",
+                    throwable
+                );
+            });
     }
 }

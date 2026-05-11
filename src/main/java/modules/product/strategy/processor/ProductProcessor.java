@@ -50,13 +50,6 @@ public class ProductProcessor {
 
     public CompletionStage<Void> process(String id, Product product) {
         return CompletableFuture.runAsync(() -> {
-            LOG.info(
-                "Processing product '{}' (ID: {}) for process ID: {}",
-                product.product(),
-                product.id(),
-                id
-            );
-
             ProductProcessorStrategy processor = strategyMap.getOrDefault(
                 product.product(),
                 strategyMap.get("default")
