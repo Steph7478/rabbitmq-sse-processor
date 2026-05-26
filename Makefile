@@ -31,7 +31,7 @@ clean:
 	@./docker/scripts/clean.sh
 
 logs-dev:
-	docker logs -f rabbitmq-test-app-dev
+	docker logs -f rabbitmq
 
 logs-prod-native:
 	docker logs -f rabbitmq-test-app-prod-native
@@ -40,7 +40,7 @@ logs-prod-jvm:
 	docker logs -f rabbitmq-test-app-prod-jvm
 
 shell-dev:
-	docker exec -it rabbitmq-test-app-dev sh
+	docker exec -it rabbitmq sh
 
 shell-prod-native:
 	docker exec -it rabbitmq-test-app-prod-native sh
@@ -50,7 +50,7 @@ shell-prod-jvm:
 
 status:
 	@echo "Dev:"
-	@docker ps --filter "name=rabbitmq-test-dev" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" || true
+	@docker ps --filter "name=rabbitmq" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" || true
 	@echo ""
 	@echo "Prod Native:"
 	@docker ps --filter "name=rabbitmq-test-prod-native" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" || true

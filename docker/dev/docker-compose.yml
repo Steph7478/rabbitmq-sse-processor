@@ -1,7 +1,8 @@
 services:
   rabbitmq:
     image: rabbitmq:3.13-management-alpine
-    container_name: rabbitmq-test-dev
+    container_name: rabbitmq
+    restart: always
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -9,9 +10,7 @@ services:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
     volumes:
-      - rabbitmq_dev_data:/var/lib/rabbitmq
-    networks:
-      - dev-network
+      - rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 10s
@@ -22,29 +21,20 @@ services:
     build:
       context: ../..
       dockerfile: docker/dev/Dockerfile
-    container_name: rabbitmq-test-app-dev
+    container_name: api
+    restart: always
     ports:
       - "8080:8080"
       - "5005:5005"
     environment:
-      - QUARKUS_RABBITMQ_HOST=rabbitmq
-      - QUARKUS_RABBITMQ_PORT=5672
-      - QUARKUS_RABBITMQ_USERNAME=guest
-      - QUARKUS_RABBITMQ_PASSWORD=guest
-      - JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-    volumes:
-      - ../../src:/app/src
-      - ../../pom.xml:/app/pom.xml
-      - ~/.m2:/root/.m2
+      QUARKUS_RABBITMQ_HOST: rabbitmq
+      QUARKUS_RABBITMQ_PORT: 5672
+      QUARKUS_RABBITMQ_USERNAME: guest
+      QUARKUS_RABBITMQ_PASSWORD: guest
+      QUARKUS_ANALYTICS_DISABLED: "true"
     depends_on:
       rabbitmq:
         condition: service_healthy
-    networks:
-      - dev-network
-
-networks:
-  dev-network:
-    driver: bridge
 
 volumes:
-  rabbitmq_dev_data:
+  rabbitmq_data:
