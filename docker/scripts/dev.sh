@@ -11,4 +11,5 @@ echo -e "${GREEN}RabbitMQ Management: http://localhost:15672 (guest/guest)${NC}"
 echo ""
 
 cd "$(dirname "$0")/../dev"
-docker-compose up -d --build
+docker compose up -d --build
+

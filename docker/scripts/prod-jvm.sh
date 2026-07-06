@@ -9,4 +9,5 @@ echo -e "${GREEN}App: http://localhost:8080${NC}"
 echo ""
 
 cd "$(dirname "$0")/../prod/jvm"
-docker-compose up -d --build
+docker compose up -d --build
+
